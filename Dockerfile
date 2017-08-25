@@ -4,12 +4,11 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /root/.composer
 ENV COMPOSER_VERSION 1.5.1
 
-RUN apt-get update \
-    && apt-get install -y libpng-dev zip unzip mysql-client git\
-    && docker-php-ext-install pdo pdo_mysql mysqli \
-    && docker-php-ext-enable pdo pdo_mysql mysqli \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng-dev zip unzip mysql-client git php5-mysql \
+    && rm -r /var/lib/apt/lists/*\
+    && docker-php-ext-install pdo pdo_mysql mysqli zip \
     && docker-php-ext-install gd \
-    && docker-php-ext-enable gd \
     && a2enmod rewrite \
     && echo 'Europe/Moscow' > /etc/timezone \
     && dpkg-reconfigure --frontend noninteractive tzdata;
@@ -27,4 +26,5 @@ RUN curl -s -f -L -o /tmp/installer.php https://raw.githubusercontent.com/compos
  && composer --ansi --version --no-interaction \
  && composer global require drush/drush:8.* \
  && ln -s /root/.composer/vendor/drush/drush/drush /usr/local/bin/drush \
- && composer global require "laravel/installer";
+ && composer global require "laravel/installer" \
+ && ln -s /root/.composer/vendor/laravel/installer/laravel /usr/local/bin/laravel
